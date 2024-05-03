@@ -57,6 +57,7 @@ export class UsersService {
       wechat: "",
       ip: "",
       role: "",
+      rank: [],
       describe: "这个人很懒，什么都没留下...QVQ",
     }
     const newUser = this.userRepository.create(newUserInfo)
@@ -111,7 +112,6 @@ export class UsersService {
       if (result.affected === 0) {
         throw new NotFoundException(`User with ID "${phone}" not found`)
       } else {
-        console.log(result)
         return this.userRepository.findOneBy({ phone: phone })
       }
     }

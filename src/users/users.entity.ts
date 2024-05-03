@@ -58,6 +58,9 @@ export class Users {
   })
   describe: string
 
+  @Column({ nullable: true, type: "json" }) // 设置为 JSON 类型
+  rank: { type: string; top: number }[] // 定义数组元素结构
+
   @Column({
     nullable: true,
     type: "text",
