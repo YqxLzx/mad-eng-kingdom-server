@@ -7,6 +7,11 @@ import {
   CreateDateColumn,
 } from "typeorm"
 
+interface IUserItem {
+  name: string
+  sex: string   
+}
+
 @Entity()
 export class Users {
   @PrimaryGeneratedColumn()
@@ -60,6 +65,22 @@ export class Users {
 
   @Column({ nullable: true, type: "json" }) // 设置为 JSON 类型
   rank: { type: string; top: number }[] // 定义数组元素结构
+
+  @Column({ nullable: true, type: "json" })
+  friends: {
+    following?: {
+      count: number
+      list: IUserItem[]
+    }
+    follower?: {
+      count: number
+      list: IUserItem[]
+    }
+    blockList?: {
+      count: number
+      list: IUserItem[]
+    }
+  }
 
   @Column({
     nullable: true,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { CreateUserDto } from "./dto/create-user.dto"
 import {
   Injectable,
@@ -45,7 +46,8 @@ export class UsersService {
     if (result) {
       throw new NotFoundException("User already exists")
     }
-    const newUserInfo = {
+    const newUserInfo: Users = {
+      //@ts-expect-error dd
       access_token: this.jwtService.sign({ phone, email, password }),
       account: createUserDto.phone || createUserDto.email,
       password: createUserDto.password,
@@ -58,6 +60,20 @@ export class UsersService {
       ip: "",
       role: "",
       rank: [],
+      friends: {
+        follower: {
+          count: 0,
+          list: [],
+        },
+        following: {
+          count: 0,
+          list: [],
+        },
+        blockList: {
+          count: 0,
+          list: [],
+        },
+      },
       describe: "这个人很懒，什么都没留下...QVQ",
     }
     const newUser = this.userRepository.create(newUserInfo)
