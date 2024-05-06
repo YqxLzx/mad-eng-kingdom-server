@@ -11,6 +11,7 @@ import { UsersModule } from "./users/users.module"
 import { AppController } from "./app.controller"
 import { AppService } from "./app.service"
 import { StsController } from "./sts/sts.controller"
+import { EventsModule } from "./events/events.module"
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { StsController } from "./sts/sts.controller"
       synchronize: true,
     }),
     UsersModule,
+    EventsModule,
   ],
   controllers: [AppController, StsController],
   providers: [
