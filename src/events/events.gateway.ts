@@ -1,71 +1,83 @@
-import {
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  WsResponse,
-  OnGatewayConnection,
-  OnGatewayDisconnect
-} from "@nestjs/websockets"
-import { from, Observable } from "rxjs"
-import { map } from "rxjs/operators"
-//import { Server, Socket } from "ws"
-import { Server, Socket } from 'socket.io';
-
-import { v4 as uuidv4 } from 'uuid';
-
-interface IRoom {
-  id: string;
-  users: string[]; // 如果已匹配，则存储房间名  
-}
-
-@WebSocketGateway(8080)
-export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer()
-  server: Server
-
-  rooms: IRoom[] = [];
-
-  handleConnection(client: Socket) {
-    // Check if there are available rooms
-    const availableRoom = this.rooms.find(room => room.users.length < 2);
-
-    if (availableRoom) {
-      // Add user to existing room
-      availableRoom.users.push(client.id);
-      client.join(availableRoom.id);
-      // Notify user about the room they joined
-      client.emit('roomJoined', { roomId: client.rooms[1] });
-    } else {
-      // Create new room
-      const newRoom: IRoom = {
-        id: uuidv4(),
-        users: [client.id],
-      };
-      this.rooms.push(newRoom);
-      client.join(newRoom.id);
-      // Notify user about the room they joined
-      client.emit('roomCreated', { roomId: client.rooms[1] });
-    }
-
-
-  }
-
-  handleDisconnect(client: Socket) {
-    // Remove user from the room
-    this.rooms.forEach(room => {
-      const index = room.users.indexOf(client.id);
-      if (index !== -1) {
-        room.users.splice(index, 1);
-        client.leave(room.id);
+import {  
+  SubscribeMessage,  
+  WebSocketGateway,  
+  WebSocketServer,  
+  OnGatewayConnection,  
+  OnGatewayDisconnect,  
+  ConnectedSocket,  
+  MessageBody,  
+} from "@nestjs/websockets";  
+import { Server, Socket } from 'ws'; // 注意这里应该使用 socket.io 而不是 ws  
+import { v4 as uuidv4 } from 'uuid';  
+  
+interface IRoom {  
+  id: string;  
+  users: { id: string; socket: Socket }[]; // 存储客户端的 Socket ID 和 Socket 实例  
+}  
+  
+@WebSocketGateway(8080)  
+export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {  
+  @WebSocketServer()  
+  server: Server;  
+  
+  rooms: IRoom[] = [];  
+  
+  @SubscribeMessage('leaving')
+  handleLeaving(@MessageBody() data: { roomId: string; userId: string }) {
+    // Find the room
+    const roomIndex = this.rooms.findIndex(room => room.id === data.roomId);
+    if (roomIndex !== -1) {
+      const room = this.rooms[roomIndex];
+      // Find the user to remove
+      const userIndex = room.users.findIndex(user => user.id === data.userId);
+      if (userIndex !== -1) {
+        const removedUser = room.users.splice(userIndex, 1)[0];
+        // Notify the leaving user
+        removedUser.socket.send( JSON.stringify({ type:'myselfLeft',message: 'You have left the room.' }));
         // Notify other users in the room about the user leaving
-        client.to(room.id).emit('userLeft', { userId: client.id });
+        room.users.forEach(user => {
+          if (user.id !== data.userId) {
+            user.socket.send( JSON.stringify({type:'otherLeft', message: `${removedUser.id} has left the room.` }));
+          }
+        });
+        removedUser.socket.close();
+        console.log('User left room:', removedUser.id);
       }
-    });
+      
+      // If the room is empty, remove it
+      if (room.users.length === 0) {
+        this.rooms.splice(roomIndex, 1);
+        console.log('Room emptied and removed:', room.id);
+      }
+    }
   }
+  
+  handleConnection(client: Socket, ...args: any[]) {  
+    // Check if there are available rooms  
+    const availableRoom = this.rooms.find(room => room.users.length < 2);  
+    if (availableRoom) {  
+      // Add user to existing room  
+      const userId = uuidv4(); // 假设我们需要一个唯一的用户ID，而不是直接使用Socket ID  
+      availableRoom.users.push({ id: userId, socket: client });  
+      // Notify user about the room they joined  
+      client.send(  JSON.stringify({type:'roomJoined', roomId: availableRoom.id,userId })); // 使用 emit 而不是 send，因为 send 是 ws 的方法  
+    } else {  
+      // Create new room  
+      const newRoomId = uuidv4() + '_room';  
+      const userId = uuidv4()
+      const newRoom: IRoom = {  
+        id: newRoomId,  
+        users: [{ id: userId, socket: client }],  
+      };  
+      this.rooms.push(newRoom);  
+      // Notify user about the room they joined  
+      client.send( JSON.stringify({type:'roomCreated', roomId:newRoomId,userId })); // 使用 emit 而不是 send，因为 send 是 ws 的方法  
+      console.log('New room created:', newRoomId);
+    }  
+  }  
+  
+  handleDisconnect(client: Socket) {  
+    console.log('close',this.rooms)
+  }  
 
-  @SubscribeMessage('message')
-  handleMessage(client: Socket, payload: any) {
-    // Handle messages from clients
-    // You can implement message handling logic here
-  }
 }
