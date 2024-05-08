@@ -8,3 +8,5 @@ export function checkEmailOrphone(value: string) {
     return "phone"
   }
 }
+
+export * from "./baiduAccessToken"

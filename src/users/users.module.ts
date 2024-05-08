@@ -4,7 +4,6 @@ import { UsersController } from "./users.controller"
 import { TypeOrmModule } from "@nestjs/typeorm"
 import { Users } from "./users.entity" // 引入你的 User 实体
 import { JwtModule } from "@nestjs/jwt"
-const a = "2"
 @Module({
   imports: [
     TypeOrmModule.forFeature([Users]), // 导入并为 User 实体提供存储库

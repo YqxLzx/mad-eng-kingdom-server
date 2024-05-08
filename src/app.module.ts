@@ -12,6 +12,7 @@ import { AppController } from "./app.controller"
 import { AppService } from "./app.service"
 import { StsController } from "./sts/sts.controller"
 import { EventsModule } from "./events/events.module"
+import { WordsModule } from "./words/words.module"
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { EventsModule } from "./events/events.module"
     }),
     UsersModule,
     EventsModule,
+    WordsModule,
   ],
   controllers: [AppController, StsController],
   providers: [
