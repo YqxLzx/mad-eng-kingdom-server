@@ -4,17 +4,15 @@ import { InjectEntityManager } from "@nestjs/typeorm"
 import { EntityManager } from "typeorm"
 import { Word } from "./word.entity"
 
-
 @Injectable()
 export class WordsService {
   constructor(
     @InjectEntityManager()
     private readonly entityManager: EntityManager,
-   // private readonly logger = new Logger(EntityManager.name) 
-
+    // private readonly logger = new Logger(EntityManager.name)
   ) {}
 
-  async createWords(words: Word[]){
+  async createWords(words: Word[]) {
     const savedWords = await this.entityManager.insert(
       Word, // Add the entity class as the first argument
       words,
@@ -22,9 +20,8 @@ export class WordsService {
     return savedWords
   }
 
-  async findByWord(word: string): Promise<Word[]> {  
+  async findByWord(word): Promise<Word[]> {
     //this.logger.error('findByWord', word)
-    console.log(word)
-    return await this.entityManager.find(Word, { where: {word} });  
-  }  
+    return await this.entityManager.find(Word, { where: { word } })
+  }
 }

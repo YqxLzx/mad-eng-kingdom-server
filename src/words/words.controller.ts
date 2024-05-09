@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Get, Param } from "@nestjs/common"
 import { WordsService } from "./words.service"
 import { Word } from "./word.entity"
-import { Public } from "src/authGuard/publicAuth";
+import { Public } from "src/authGuard/publicAuth"
 
 @Controller("words")
 export class WordsController {
@@ -14,9 +14,10 @@ export class WordsController {
   }
 
   @Public()
-  @Get('by-word/:word')  
-  async findByWord(@Param('word') word: string): Promise<any> {  
-    const result = await this.wordsService.findByWord(word);  
-    return result;  
-  }  
+  @Get("by-word/:word")
+  async findByWord(@Param("word") word: string): Promise<Word[]> {
+    const result = await this.wordsService.findByWord(word)
+    console.log(result)
+    return result
+  }
 }
