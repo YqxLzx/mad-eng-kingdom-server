@@ -13,6 +13,8 @@ import { AppService } from "./app.service"
 import { StsController } from "./sts/sts.controller"
 import { EventsModule } from "./events/events.module"
 import { WordsModule } from "./words/words.module"
+import { Word } from "./words/word.entity"
+
 
 @Module({
   imports: [
@@ -31,9 +33,24 @@ import { WordsModule } from "./words/words.module"
       autoLoadEntities: true,
       synchronize: true,
     }),
+    TypeOrmModule.forRootAsync({  
+      name: 'wnProConnection', // 与 forFeature 中的名称匹配  
+      useFactory: () => ({  
+        type: 'mysql',  
+        host: 'localhost',  
+        port: 3306,  
+        username: 'root',  
+        password: 'lzx125lzx',  
+        database: 'wn_pro_mysql', // 你的 wn_pro_mysql 数据库名  
+        entities: [Word], // 这里不需要添加 WnSynset，因为已经在 WordsModule 的 forFeature 中指定了  
+        synchronize: true,
+        logging: true // 注意：生产环境中应该关闭这个选项  
+      }),  
+    }),
     UsersModule,
     EventsModule,
     WordsModule,
+
   ],
   controllers: [AppController, StsController],
   providers: [
@@ -48,5 +65,8 @@ import { WordsModule } from "./words/words.module"
     },
     JwtStrategy,
   ],
+  
 })
-export class AppModule {}
+export class AppModule {
+
+}

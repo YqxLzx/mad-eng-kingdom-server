@@ -1,5 +1,5 @@
 // src/words/words.service.ts
-import { Injectable } from "@nestjs/common"
+import { Injectable, Logger } from "@nestjs/common"
 import { InjectEntityManager } from "@nestjs/typeorm"
 import { EntityManager } from "typeorm"
 import { Word } from "./word.entity"
@@ -10,6 +10,8 @@ export class WordsService {
   constructor(
     @InjectEntityManager()
     private readonly entityManager: EntityManager,
+   // private readonly logger = new Logger(EntityManager.name) 
+
   ) {}
 
   async createWords(words: Word[]){
@@ -19,4 +21,10 @@ export class WordsService {
     )
     return savedWords
   }
+
+  async findByWord(word: string): Promise<Word[]> {  
+    //this.logger.error('findByWord', word)
+    console.log(word)
+    return await this.entityManager.find(Word, { where: {word} });  
+  }  
 }

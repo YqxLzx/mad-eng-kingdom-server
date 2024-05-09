@@ -2,8 +2,32 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
 
 interface Meta {}
 
-@Entity("dictionary")
+@Entity("wn_synset")
+
+
+
+
 export class Word {
+  @PrimaryGeneratedColumn()
+  synset_id:number
+  
+  @Column()
+  w_num:number
+
+  @Column()
+  word:string
+  
+  @Column()
+  ss_type:string
+  
+  @Column()
+  sense_number:number
+  
+  @Column()
+  tag_count:number
+}
+
+/* export class Word {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -28,9 +52,5 @@ export class Word {
   @Column()
   pronunciation: string
 
-/*   @Column("text", { array: true })
-  synonyms: string[]
-
-  @Column("text", { array: true })
-  antonyms: string[] */
 }
+ */

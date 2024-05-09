@@ -7,7 +7,9 @@ import { Word } from "./word.entity"
 
 @Module({
   controllers: [WordsController],
-  imports: [TypeOrmModule.forFeature([Word])],
+  imports: [TypeOrmModule.forFeature([Word],'wnProConnection')],
   providers: [WordsService],
 })
 export class WordsModule {}
+
+
