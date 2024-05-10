@@ -17,17 +17,17 @@ export class Word {
   @Column()  
   phonetic: string;  
   
-  @Column()  
+  @Column({ type: 'text' }) 
   definition: string;  
   
-  @Column()  
-  translation: string;
+  @Column({nullable: true }) 
+  translation?: string;
 
-  @Column()  
-  collins: number;  
+  @Column({nullable: true }) 
+  collins?: number;  
 
-  @Column()  
-  oxford: number;  
+  @Column({nullable: true })  
+  oxford?: number;  
 
   @Column()  
   tag: string;  

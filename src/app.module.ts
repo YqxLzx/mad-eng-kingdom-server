@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common"
+import { Module, OnApplicationBootstrap } from "@nestjs/common"
 import { APP_INTERCEPTOR } from "@nestjs/core"
 import { TransformResponseInterceptor } from "./Interceptor/transform-response.interceptor"
 import { PassportModule } from "@nestjs/passport"
@@ -13,6 +13,9 @@ import { AppService } from "./app.service"
 import { StsController } from "./sts/sts.controller"
 import { EventsModule } from "./events/events.module"
 import { WordsModule } from "./words/words.module"
+import { FileModule } from './file/file.module';
+import { FileService } from "./file/file.service"
+
 
 @Module({
   imports: [
@@ -34,9 +37,11 @@ import { WordsModule } from "./words/words.module"
     UsersModule,
     EventsModule,
     WordsModule,
+    FileModule,
   ],
   controllers: [AppController, StsController],
   providers: [
+
     AppService,
     {
       provide: APP_INTERCEPTOR,
@@ -49,4 +54,7 @@ import { WordsModule } from "./words/words.module"
     JwtStrategy,
   ],
 })
-export class AppModule {}
+
+export class AppModule {
+
+}
