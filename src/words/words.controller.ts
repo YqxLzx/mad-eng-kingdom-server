@@ -7,10 +7,11 @@ import { Public } from "src/authGuard/publicAuth"
 export class WordsController {
   constructor(private readonly wordsService: WordsService) {}
 
-  @Post("mulAdd")
-  async createWords(@Body() words: Word[]): Promise<any> {
+  @Public()
+  @Post("addWord")
+  async createWords(@Body("word") word: string) {
     // 调用 WordsService 的 createWords 方法来处理批量新增
-    return this.wordsService.createWords(words)
+    return this.wordsService.createWords(word)
   }
 
   @Public()

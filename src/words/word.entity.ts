@@ -1,51 +1,63 @@
-import { Entity, PrimaryColumn, Column } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
 
-interface Meta {}
+interface Resemble {  
+  dict: Array<unknown>; // 由于dict中包含Object，但没有具体结构，我们暂时使用unknown  
+  synonyms: Array<string>;  
+  description: string;  
+}
 
-@Entity("wn_synset")
+@Entity("words")
 export class Word {
-  // 第一个复合主键字段
-  @PrimaryColumn({
-    type: "decimal",
-    precision: 10,
-    scale: 0,
+  @PrimaryGeneratedColumn() 
+  id: number; 
 
-    name: "synset_id", // 数据库中的列名
-  })
-  synset_id: number
+  @Column()  
+  word: string; 
 
-  // 第二个复合主键字段
-  @PrimaryColumn({
-    type: "decimal",
-    precision: 10,
-    scale: 0,
+  @Column()  
+  phonetic: string;  
+  
+  @Column()  
+  definition: string;  
+  
+  @Column()  
+  translation: string;
 
-    name: "w_num", // 数据库中的列名
-  })
-  w_num: number
+  @Column()  
+  collins: number;  
 
-  @Column()
-  word: string
+  @Column()  
+  oxford: number;  
 
-  @Column({
-    type: "char",
-    length: 2, // 字符长度
-  })
-  ss_type: string
+  @Column()  
+  tag: string;  
 
-  @Column({
-    type: "decimal",
-    precision: 10,
-    scale: 0,
-  })
-  sense_number: number
+  @Column()  
+  bnc: number; 
+  
+  @Column()  
+  frq: number;  
 
-  @Column({
-    type: "decimal",
-    precision: 10,
-    scale: 0,
-  })
-  tag_count: number
+  @Column()  
+  exchange: string; 
+  
+  @Column()  
+  entry: string;  
+
+  @Column()  
+  lemma: string;  
+
+  @Column()  
+  level: number;  
+
+  @Column()  
+  frequency: number;  
+
+  @Column({ type: 'json' }) 
+  resemble: Resemble;  
+
+  @Column({type:'json', nullable: true }) 
+  root?: JSON;
 }
 
 /* export class Word {

@@ -2233,6 +2233,11 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
+csv-parse@^5.3.3:
+  version "5.5.5"
+  resolved "https://packages.aliyun.com/60e3dede2f222be2d9401089/npm/npm-registry/csv-parse/-/csv-parse-5.5.5.tgz#68a271a9092877b830541805e14c8a80e6a22517"
+  integrity sha512-erCk7tyU3yLWAhk6wvKxnyPtftuy/6Ak622gOO7BCJ05+TYffnPCJF905wmOQm+BpkX54OdAl8pveJwUdpnCXQ==
+
 dashdash@^1.12.0:
   version "1.14.1"
   resolved "https://packages.aliyun.com/60e3dede2f222be2d9401089/npm/npm-registry/dashdash/-/dashdash-1.14.1.tgz#853cfa0f7cbe2fed5de20326b8dd581035f6e2f0"
@@ -2395,6 +2400,13 @@ ecc-jsbn@~0.1.1:
   dependencies:
     jsbn "~0.1.0"
     safer-buffer "^2.1.0"
+
+ecdict@^0.0.4:
+  version "0.0.4"
+  resolved "https://packages.aliyun.com/60e3dede2f222be2d9401089/npm/npm-registry/ecdict/-/ecdict-0.0.4.tgz#aadfa6e46ed9c586144a3f749d585111168ec5f2"
+  integrity sha512-nFlK3dCARkW9/RbJSqFGVbXwKMX88dqBNf7C3GXpWsGX0omsHkfrYm2L+aNyD+ocK/3J85xrZaplh3oA6uG0Zg==
+  dependencies:
+    csv-parse "^5.3.3"
 
 ecdsa-sig-formatter@1.0.11:
   version "1.0.11"
