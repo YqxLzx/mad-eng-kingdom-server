@@ -1,63 +1,63 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
 
-interface Resemble {  
-  dict: Array<unknown>; // 由于dict中包含Object，但没有具体结构，我们暂时使用unknown  
-  synonyms: Array<string>;  
-  description: string;  
+interface Resemble {
+  dict: Array<unknown> // 由于dict中包含Object，但没有具体结构，我们暂时使用unknown
+  synonyms: Array<string>
+  description: string
 }
 
 @Entity("words")
 export class Word {
-  @PrimaryGeneratedColumn() 
-  id: number; 
+  @PrimaryGeneratedColumn()
+  id: number
 
-  @Column()  
-  word: string; 
+  @Column({ nullable: true })
+  level: number
 
-  @Column()  
-  phonetic: string;  
-  
-  @Column({ type: 'text' }) 
-  definition: string;  
-  
-  @Column({nullable: true }) 
-  translation?: string;
+  @Column({ nullable: true })
+  frequency: number
 
-  @Column({nullable: true }) 
-  collins?: number;  
+  @Column({ type: "json", nullable: true })
+  root: any
 
-  @Column({nullable: true })  
-  oxford?: number;  
+  @Column()
+  word: string
 
-  @Column()  
-  tag: string;  
+  @Column({ nullable: true, collation: "utf8mb4_0900_ai_ci" })
+  phonetic: string
 
-  @Column()  
-  bnc: number; 
-  
-  @Column()  
-  frq: number;  
+  @Column({ nullable: true })
+  translation: string
 
-  @Column()  
-  exchange: string; 
-  
-  @Column()  
-  entry: string;  
+  @Column({ nullable: true })
+  collins: number
 
-  @Column()  
-  lemma: string;  
+  @Column({ nullable: true })
+  oxford: number
 
-  @Column()  
-  level: number;  
+  @Column({ nullable: true, collation: "utf8mb4_0900_ai_ci" })
+  tag: string
 
-  @Column()  
-  frequency: number;  
+  @Column({ nullable: true })
+  bnc: number
 
-  @Column({ type: 'json' }) 
-  resemble: Resemble;  
+  @Column({ nullable: true })
+  frq: number
 
-  @Column({type:'json', nullable: true }) 
-  root?: JSON;
+  @Column({ nullable: true, collation: "utf8mb4_0900_ai_ci" })
+  exchange: string
+
+  @Column({ nullable: true, collation: "utf8mb4_0900_ai_ci" })
+  entry: string
+
+  @Column({ nullable: true, collation: "utf8mb4_0900_ai_ci" })
+  lemma: string
+
+  @Column({ type: "json", nullable: true })
+  resemble: Resemble
+
+  @Column({ type: "text", nullable: true, collation: "utf8mb4_0900_ai_ci" })
+  definition: string
 }
 
 /* export class Word {

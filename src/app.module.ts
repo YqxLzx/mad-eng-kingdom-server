@@ -13,9 +13,7 @@ import { AppService } from "./app.service"
 import { StsController } from "./sts/sts.controller"
 import { EventsModule } from "./events/events.module"
 import { WordsModule } from "./words/words.module"
-import { FileModule } from './file/file.module';
-import { FileService } from "./file/file.service"
-
+import { FileModule } from "./file/file.module"
 
 @Module({
   imports: [
@@ -41,7 +39,6 @@ import { FileService } from "./file/file.service"
   ],
   controllers: [AppController, StsController],
   providers: [
-
     AppService,
     {
       provide: APP_INTERCEPTOR,
@@ -54,7 +51,4 @@ import { FileService } from "./file/file.service"
     JwtStrategy,
   ],
 })
-
-export class AppModule {
-
-}
+export class AppModule {}

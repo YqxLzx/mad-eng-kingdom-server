@@ -3,7 +3,6 @@ import { Injectable, Logger } from "@nestjs/common"
 import { InjectEntityManager } from "@nestjs/typeorm"
 import { EntityManager } from "typeorm"
 import { Word } from "./word.entity"
-import { searchWord } from "ecdict";
 
 @Injectable()
 export class WordsService {
@@ -11,10 +10,10 @@ export class WordsService {
     @InjectEntityManager()
     private readonly entityManager: EntityManager,
     // private readonly logger = new Logger(EntityManager.name)
-  ) { }
+  ) {}
 
   async createWords(word: string) {
-
+    /* 
     const res = searchWord(word, {
       withResemble: true,
       withRoot: true,
@@ -30,7 +29,7 @@ export class WordsService {
       return savedWords
     } else {
       return { error: 'word not found', code: 404, message: 'word not found' }
-    }
+    } */
   }
 
   async findByWord(word): Promise<Word[]> {
