@@ -33,7 +33,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (roomIndex !== -1) {
       const room = this.rooms[roomIndex]
       // Find the user to remove
-      console.log("account", data.account)
       const userIndex = room.users.findIndex(
         (user) => user.userInfo.account === data.account,
       )
@@ -81,7 +80,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     const roomIndex = this.rooms.findIndex((room) => room.users.length === 1) // 寻找空房间
-    console.log(roomIndex, this.rooms)
     if (roomIndex === -1) {
       // 如果没有空房间，创建一个新房间
       const roomId = uuidv4()
