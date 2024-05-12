@@ -141,6 +141,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleConnection(client: Socket, ...args: any[]) {}
 
   handleDisconnect(client: Socket) {
-    console.log("to beee close")
+    console.log("to beeeeee close")
   }
 }
