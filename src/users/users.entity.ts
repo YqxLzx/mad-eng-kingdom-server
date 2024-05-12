@@ -9,7 +9,7 @@ import {
 
 interface IUserItem {
   name: string
-  sex: string   
+  sex: string
 }
 
 @Entity()
