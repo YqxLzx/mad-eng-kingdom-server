@@ -18,7 +18,6 @@ export class WordsController {
   @Get("by-word/:word")
   async findByWord(@Param("word") word: string): Promise<Word[]> {
     const result = await this.wordsService.findByWord(word)
-    console.log(result)
     return result
   }
 }

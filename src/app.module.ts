@@ -24,9 +24,9 @@ import { FileModule } from "./file/file.module"
     }),
     TypeOrmModule.forRoot({
       type: "mysql",
-      host: "localhost",
+      host: "106.52.221.140",
       port: 3306,
-      username: "root",
+      username: "new_schema",
       password: "lzx125lzx",
       database: "new_schema",
       autoLoadEntities: true,
