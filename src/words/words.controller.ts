@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param } from "@nestjs/common"
+import { Controller, Post, Body, Get, Param, Query } from "@nestjs/common"
 import { WordsService } from "./words.service"
 import { Word } from "./word.entity"
 import { Public } from "src/authGuard/publicAuth"
@@ -19,5 +19,17 @@ export class WordsController {
   async findByWord(@Param("word") word: string): Promise<Word[]> {
     const result = await this.wordsService.findByWord(word)
     return result
+  }
+
+  @Public()
+  @Get("getAnyWords")
+  async getAnyWords(@Query("count") count: number): Promise<Word[]> {
+    return this.wordsService.getAnyWords(count)
+  }
+
+  @Public()
+  @Get("getOneRandomWord")
+  async getRandomWord(): Promise<Word> {
+    return this.wordsService.getRandomWord()
   }
 }

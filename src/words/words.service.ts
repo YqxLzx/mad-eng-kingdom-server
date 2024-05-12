@@ -36,4 +36,42 @@ export class WordsService {
     //this.logger.error('findByWord', word)
     return await this.entityManager.find(Word, { where: { word } })
   }
+
+  async getRandomWord(): Promise<Word> {
+    const totalWords = await this.entityManager.count(Word)
+
+    // 生成随机索引
+    const randomIndex = Math.floor(Math.random() * totalWords)
+
+    // 使用查询构造器获取随机单词
+    const randomWord = await this.entityManager.findOne(Word, {
+      where: { id: randomIndex },
+    })
+
+    return randomWord
+  }
+
+  async getAnyWords(count: number): Promise<Word[]> {
+    const totalCount = await this.entityManager.count(Word)
+    if (totalCount === 0 || count <= 0) {
+      return [] // 如果数据库中没有任何 Word 实体，或者 count 小于等于 0，则返回空数组
+    }
+
+    const randomIds: number[] = []
+    while (randomIds.length < count) {
+      const randomId = Math.floor(Math.random() * totalCount)
+      if (!randomIds.includes(randomId)) {
+        randomIds.push(randomId)
+      }
+    }
+
+    const randomWordsPromises: Promise<Word>[] = randomIds.map(async (id) => {
+      return await this.entityManager.findOne(Word, { where: { id } })
+    })
+
+    const randomWords = await Promise.all(randomWordsPromises)
+    return randomWords.filter(
+      (word) => word !== undefined && word !== null,
+    ) as Word[]
+  }
 }
