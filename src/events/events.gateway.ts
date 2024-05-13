@@ -11,16 +11,23 @@ import { Server, Socket } from "ws"
 import { v4 as uuidv4 } from "uuid"
 import { WordsService } from "src/words/words.service"
 import { Word } from "src/words/word.entity"
+import { time } from "console"
 
 interface IRoom {
   id: string
   quizzes: Question[]
+  currentQuestionIndex: number
   users: {
+    score: number
     id: string
     socket: Socket
     userInfo: { name: string; avatar: string; account: string }
     selectedOption: number[]; // 存储用户选择的选项
   }[] // 存储客户端的 Socket ID 和 Socket 实例
+  downTimer?: {
+    instance: NodeJS.Timeout,
+    time: number
+  }
 }
 
 
@@ -229,9 +236,11 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const roomId = uuidv4()
       this.rooms.push({
         id: roomId,
+        currentQuestionIndex: 0,
         users: [
           {
             id: userData.account,
+            score: 0,
             socket: client,
             userInfo: {
               name: userData.name,
@@ -241,6 +250,10 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
             selectedOption: []
           },
         ],
+        downTimer: {
+          instance: null,
+          time: 10
+        },
         quizzes: []
       })
       // 提示房主创建成功
@@ -257,6 +270,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       room.users.push({
         id: userData.account,
         socket: client,
+        score: 0,
         userInfo: {
           name: userData.name,
           avatar: userData.avatar,
@@ -273,7 +287,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
           message: "Joined room successfully.",
           roomId: room.id,
           hostInfo: room.users[0].userInfo,
-          questions
+          //questions: [questions[0]],
         }),
       )
       // 提示房主客人进来了
@@ -283,12 +297,129 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
           message: `${userData.name} (${userData.account}) entered the room.`,
           guestInfo: userData,
           roomId: room.id,
-          questions
+          //questions: [questions[0]],
         }),
       )
+
+      // 发送第一题
+     setTimeout(() => {
+      this.sendQuestionToRoom(room, questions[0]);
+     },3000)
+
+/*       room.downTimer.instance = setInterval(() => {
+        if (room.downTimer.time === 0) {
+          clearInterval(room.downTimer.instance)
+          return
+        } 
+        room.downTimer.time = room.downTimer.time - 1
+        room.users.forEach(user => {
+          console.log('user.socket:', room.downTimer.time)
+          user.socket.send(JSON.stringify({ type: "downTime", downTime: room.downTimer.time }))
+        })
+      }, 1000) */
+
+/*       setTimeout(() => {
+        //clearInterval(room.downTimer.instance)
+        room.downTimer.time = 10
+      },1000 * 101) */
     }
   }
 
+  // 处理用户选择答案的消息
+  @SubscribeMessage("selectOption")
+  // 在处理用户选择答案的方法中
+  handleSelectOption(
+    @MessageBody() data: { roomId: string; account: string; selectedOptionIndex: number },
+  ) {
+    console.log('data', data)
+    const room = this.rooms.find(room => room.id === data.roomId);
+    if (!room) {
+      return; // 房间不存在
+    }
+    const user = room.users.find(user => user.userInfo.account === data.account);
+    if (!user) {
+      return; // 用户不存在
+    }
+
+    user.selectedOption.push(data.selectedOptionIndex);
+
+
+    const userTimeOut = setTimeout(() => {
+      this.evaluateAnswers(room);
+    },1000 * 10)
+
+    // 检查是否所有用户都已经选择了答案
+    const allUsersAnswered = room.users.every(user => user.selectedOption.length > 0);
+    if (allUsersAnswered) {
+      clearTimeout(userTimeOut)
+      this.evaluateAnswers(room);
+    } else {
+      // 告知用户等待对手的选择
+      user.socket.send(JSON.stringify({
+        type: "waiting",
+        message: "Please wait for your opponent's choice."
+      }));
+    }
+
+  }
+
+  // 评估答案并更新用户的分数
+  evaluateAnswers(room: IRoom) {
+    const currentQuestion = room.quizzes[room.currentQuestionIndex];
+    console.log('currentQuestion:', currentQuestion)
+
+    if (!currentQuestion) {
+      return; // 当前题目不存在，可能已经完成了所有题目
+    }
+
+    room.users.forEach(user => {
+      if(!user.selectedOption?.[room.currentQuestionIndex]){
+        user.selectedOption[room.currentQuestionIndex] = -1
+      }
+      const selectedOptionIndex = user.selectedOption[room.currentQuestionIndex];
+      if (selectedOptionIndex !== undefined) {
+        if (selectedOptionIndex === currentQuestion.correctIndex) {
+          // 回答正确，加100分
+          user.score += 100;
+        } else {
+          // 回答错误
+          // 这里可以根据实际需求进行处理，例如扣分或者其他操作
+        }
+      }
+      // 清空用户的选择
+      user.selectedOption = [];
+    });
+
+    // 向每个用户发送得分和下一题的信息
+    room.users.forEach(user => {
+      const nextQuestionIndex = room.currentQuestionIndex + 1;
+      const nextQuestion = room.quizzes[nextQuestionIndex];
+      const message = nextQuestion ?
+        {
+          type: "nextQuestion",
+          message: "Next question.",
+          question: nextQuestion,
+          score: user.score
+        } :
+        {
+          type: "gameOver",
+          message: "Game over.",
+          score: user.score
+        };
+      console.log(message.type)
+      user.socket.send(JSON.stringify(message));
+    });
+
+    // 增加当前题目的索引以便进入下一题
+    room.currentQuestionIndex++;
+  }
+
+  // 发送题目给房间内的所有用户
+  private sendQuestionToRoom(room: IRoom, question: Question) {
+    room.users.forEach(user => {
+      user.socket.send(JSON.stringify({ type: "question", question: question }));
+    });
+  }
 
   async startGame(room: IRoom) {
     const questions: Question[] = [];
