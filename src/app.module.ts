@@ -1,4 +1,4 @@
-import { Module, OnApplicationBootstrap } from "@nestjs/common"
+import { Module, NestModule, MiddlewareConsumer } from "@nestjs/common"
 import { APP_INTERCEPTOR } from "@nestjs/core"
 import { TransformResponseInterceptor } from "./Interceptor/transform-response.interceptor"
 import { PassportModule } from "@nestjs/passport"
@@ -14,6 +14,7 @@ import { StsController } from "./sts/sts.controller"
 import { EventsModule } from "./events/events.module"
 import { WordsModule } from "./words/words.module"
 import { FileModule } from "./file/file.module"
+import * as cors from "cors" // 引入 cors 模块
 
 @Module({
   imports: [
@@ -51,4 +52,8 @@ import { FileModule } from "./file/file.module"
     JwtStrategy,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(cors()).forRoutes("*") // 对所有路由应用 CORS 中间件
+  }
+}
