@@ -231,7 +231,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }),
       )
       this.evaluateAnswers(room)
-      clearTimeout(userTimeOut)
+      //clearTimeout(userTimeOut)
     } else {
       // 告知用户等待对手的选择
       user.socket.send(
